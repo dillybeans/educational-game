@@ -3,6 +3,13 @@ export class MenuScene extends Phaser.Scene {
         super('MenuScene');
     }
 
+    preload() {
+        this.load.audio('snap', 'src/scenes/assets/sfx/block_snap.wav');
+        this.load.audio('error', 'src/scenes/assets/sfx/error_buzzer.wav');
+        this.load.audio('hover', 'src/scenes/assets/sfx/hover_click.wav');
+        this.load.audio('success', 'src/scenes/assets/sfx/success_chime.wav');
+    }
+
     create() {
         // Title
         this.add.text(400, 200, 'ECHO/SHIFT', { 
@@ -31,6 +38,7 @@ export class MenuScene extends Phaser.Scene {
         playBtn.on('pointerover', () => {
             playBtn.setBackgroundColor('#00FFFF');
             playBtn.setColor('#030914');
+            this.sound.play('hover');
         });
 
         playBtn.on('pointerout', () => {
@@ -39,7 +47,8 @@ export class MenuScene extends Phaser.Scene {
         });
 
         playBtn.on('pointerdown', () => {
-            this.scene.start('GameScene');
+            this.sound.play('snap');
+            this.scene.start('GameScene', { levelIndex: 0 });
         });
     }
 }
