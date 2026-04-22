@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Echo/Shift MVP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body { 
             margin: 0; 
@@ -19,13 +20,157 @@
         #game-container {
             border: 2px solid #00FFFF;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            display: none; /* hidden initially */
         }
         canvas { display: block; }
+        
+        /* Auth UI */
+        #auth-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 320px;
+            z-index: 10;
+            transition: opacity 0.4s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #auth-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #auth-container h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #fff;
+            text-align: center;
+            background: linear-gradient(90deg, #00FFFF, #FF00FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .auth-input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .auth-input:focus {
+            border-color: #00FFFF;
+        }
+
+        .auth-btn {
+            background: linear-gradient(135deg, #00FFFF 0%, #0088FF 100%);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,255,255,0.4);
+        }
+
+        .auth-switch {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+        
+        .auth-social {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+        }
+        
+        .auth-social button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+        
+        .auth-social button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        #auth-error {
+            color: #FF3366;
+            font-size: 0.85rem;
+            text-align: center;
+            min-height: 1.2em;
+        }
     </style>
     <!-- Phaser 3 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
 </head>
 <body>
+    <div id="auth-container">
+        <h2 id="auth-title">Welcome back</h2>
+        
+        <form class="auth-form" id="auth-form">
+            <!-- Name input is visually hidden by default; will only show for Register -->
+            <input type="text" id="auth-name" class="auth-input" placeholder="Name" style="display: none;">
+            <input type="email" id="auth-email" class="auth-input" placeholder="Email" required>
+            <input type="password" id="auth-password" class="auth-input" placeholder="Password" required>
+            
+            <div id="auth-error"></div>
+            
+            <button type="submit" id="auth-submit" class="auth-btn">Log In</button>
+        </form>
+
+        <div style="display:flex; align-items:center; color:rgba(255,255,255,0.3); font-size: 0.8rem; margin: -5px 0;">
+            <hr style="flex:1; border-color:rgba(255,255,255,0.1);"><span style="padding: 0 10px;">OR</span><hr style="flex:1; border-color:rgba(255,255,255,0.1);">
+        </div>
+        
+        <div class="auth-social">
+            <button id="auth-github">GitHub</button>
+            <button id="auth-google">Google</button>
+        </div>
+
+        <button class="auth-switch" id="auth-toggle">Don't have an account? Sign up</button>
+    </div>
+
+    <div id="logout-container" style="display: none; position: absolute; top: 1rem; right: 1rem; z-index: 20;">
+        <button id="auth-logout" class="auth-btn" style="padding: 8px 16px; font-size: 0.9rem;">Sign Out</button>
+    </div>
+
     <div id="game-container"></div>
     <script src="src/main.js" type="module"></script>
 </body>

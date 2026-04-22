@@ -5,8 +5,7 @@ export class ResultScene extends Phaser.Scene {
 
     init(data) {
         this.success = data.success || false;
-        this.levelIndex = data.levelIndex || 0;
-        this.isLastLevel = data.isLastLevel || false;
+        this.level = data.level || 1;
     }
 
     create() {
@@ -21,17 +20,12 @@ export class ResultScene extends Phaser.Scene {
             fontStyle: 'bold'
         }).setOrigin(0.5);
         
-        let subMsg = 'Equations must be balanced to clear distortion.';
-        if (this.success) {
-            subMsg = this.isLastLevel ? 'All channels synchronized. Demo complete!' : 'Audio channels balanced successfully.';
-        }
-        
+        const subMsg = this.success ? 'Audio channels balanced successfully.' : 'Equations must be balanced to clear distortion.';
         this.add.text(400, 320, subMsg, { fontSize: '18px', fill: '#fff', fontFamily: 'monospace' }).setOrigin(0.5);
 
-        let btnText = '> RETRY TRACK';
-        if (this.success) {
-            btnText = this.isLastLevel ? '> BACK TO TITLE' : '> NEXT TRACK';
-        }
+        let btnText = '> NEXT TRACK';
+        if (!this.success) btnText = '> RETRY SYNC';
+        if (this.success && this.level >= 5) btnText = '> RETURN TO STUDIO';
 
         const retryBtn = this.add.text(400, 450, btnText, { 
             fontSize: '24px', 
@@ -43,19 +37,21 @@ export class ResultScene extends Phaser.Scene {
         retryBtn.setInteractive({ useHandCursor: true });
         
         retryBtn.on('pointerover', () => {
+            this.sound.play('hover_click');
             retryBtn.setBackgroundColor(col);
-            this.sound.play('hover');
         });
         retryBtn.on('pointerout', () => retryBtn.setBackgroundColor('#ffffff'));
 
         retryBtn.on('pointerdown', () => {
-            this.sound.play('snap');
-            if (this.success && this.isLastLevel) {
-                this.scene.start('MenuScene');
-            } else if (this.success) {
-                this.scene.start('GameScene', { levelIndex: this.levelIndex + 1 });
+            this.sound.play('hover_click');
+            if (this.success) {
+                if (this.level >= 5) {
+                    this.scene.start('MenuScene'); // Beat the game
+                } else {
+                    this.scene.start('GameScene', { level: this.level + 1 }); // Next Level
+                }
             } else {
-                this.scene.start('GameScene', { levelIndex: this.levelIndex }); // Retry
+                this.scene.start('GameScene', { level: this.level }); // Retry
             }
         });
     }
