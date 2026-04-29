@@ -3,6 +3,7 @@ import { GameScene } from './scenes/GameScene.js';
 import { ResultScene } from './scenes/ResultScene.js';
 import { authClient } from './authClient.bundle.js';
 
+// ── Phaser Config ──
 const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
@@ -14,29 +15,47 @@ const config = {
     },
     physics: {
         default: 'arcade',
-        arcade: { 
-            debug: false 
-        }
+        arcade: { debug: false }
     },
     scene: [MenuScene, GameScene, ResultScene],
-    backgroundColor: '#030914'
+    backgroundColor: '#0D0D1A'
 };
 
 let game;
+let isGuest = false;
 
-const logoutContainer = document.getElementById('logout-container');
-const authLogoutBtn = document.getElementById('auth-logout');
+// ── View Management ──
+window.showView = function(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const target = document.getElementById(viewId);
+    if (target) target.classList.add('active');
+};
 
+// ── Guest Mode ──
+window.startGuestMode = function() {
+    isGuest = true;
+    showView('game-page');
+    initGame();
+};
+
+// ── Instructions Modal ──
+window.showInstructions = function() {
+    document.getElementById('instructions-modal').style.display = 'flex';
+};
+window.hideInstructions = function() {
+    document.getElementById('instructions-modal').style.display = 'none';
+};
+
+// ── Init Game ──
 function initGame() {
     if (!game) {
-        document.getElementById('game-container').style.display = 'block';
-        logoutContainer.style.display = 'block';
+        const logoutContainer = document.getElementById('logout-container');
+        if (!isGuest) logoutContainer.style.display = 'block';
         game = new Phaser.Game(config);
     }
 }
 
-// Authentication UI Flow
-const authContainer = document.getElementById('auth-container');
+// ── Auth UI ──
 const authForm = document.getElementById('auth-form');
 const authName = document.getElementById('auth-name');
 const authEmail = document.getElementById('auth-email');
@@ -47,25 +66,26 @@ const authToggle = document.getElementById('auth-toggle');
 const authError = document.getElementById('auth-error');
 const authGithub = document.getElementById('auth-github');
 const authGoogle = document.getElementById('auth-google');
+const authLogoutBtn = document.getElementById('auth-logout');
 
 let isLoginMode = true;
 
-// Check existing session
+// Check existing session on load
 authClient.getSession().then(({ data }) => {
     if (data?.session) {
-        authContainer.classList.add('hidden');
+        showView('game-page');
         initGame();
     }
 });
 
 authToggle.addEventListener('click', () => {
     isLoginMode = !isLoginMode;
-    authTitle.textContent = isLoginMode ? 'Welcome back' : 'Create Account';
-    authSubmit.textContent = isLoginMode ? 'Log In' : 'Sign Up';
+    authTitle.textContent = isLoginMode ? 'WELCOME BACK' : 'CREATE ACCOUNT';
+    authSubmit.textContent = isLoginMode ? 'LOG IN' : 'SIGN UP';
     authToggle.textContent = isLoginMode ? "Don't have an account? Sign up" : "Already have an account? Log in";
     authName.style.display = isLoginMode ? 'none' : 'block';
     authName.required = !isLoginMode;
-    authError.style.display = 'none';
+    authError.textContent = '';
 });
 
 authForm.addEventListener('submit', async (e) => {
@@ -73,9 +93,9 @@ authForm.addEventListener('submit', async (e) => {
     const email = authEmail.value;
     const password = authPassword.value;
     const name = authName.value || 'Player';
-    authError.style.display = 'none';
+    authError.textContent = '';
     authSubmit.disabled = true;
-    
+
     let result;
     if (isLoginMode) {
         result = await authClient.signIn.email({ email, password });
@@ -85,17 +105,15 @@ authForm.addEventListener('submit', async (e) => {
 
     if (result.error) {
         authError.textContent = result.error.message || 'Authentication failed.';
-        authError.style.display = 'block';
         authSubmit.disabled = false;
     } else {
-        authContainer.classList.add('hidden');
+        showView('game-page');
         initGame();
     }
 });
 
 const handleSocialInfo = () => {
     authError.textContent = "Social keys not yet configured. Please use Email.";
-    authError.style.display = 'block';
 };
 
 authGithub.addEventListener('click', () => authClient.signIn.social({ provider: 'github' }).catch(handleSocialInfo));
@@ -104,4 +122,11 @@ authGoogle.addEventListener('click', () => authClient.signIn.social({ provider: 
 authLogoutBtn.addEventListener('click', async () => {
     await authClient.signOut();
     window.location.reload();
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        hideInstructions();
+    }
 });

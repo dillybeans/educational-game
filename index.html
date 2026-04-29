@@ -3,175 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echo/Shift MVP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            margin: 0; 
-            background: #030914; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            overflow: hidden;
-            font-family: monospace;
-            color: #fff;
-        }
-        #game-container {
-            border: 2px solid #00FFFF;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-            display: none; /* hidden initially */
-        }
-        canvas { display: block; }
-        
-        /* Auth UI */
-        #auth-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 2.5rem;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            width: 320px;
-            z-index: 10;
-            transition: opacity 0.4s ease;
-            font-family: 'Inter', sans-serif;
-        }
-
-        #auth-container.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #auth-container h2 {
-            margin: 0;
-            font-size: 1.8rem;
-            color: #fff;
-            text-align: center;
-            background: linear-gradient(90deg, #00FFFF, #FF00FF);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .auth-input {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .auth-input:focus {
-            border-color: #00FFFF;
-        }
-
-        .auth-btn {
-            background: linear-gradient(135deg, #00FFFF 0%, #0088FF 100%);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,255,255,0.4);
-        }
-
-        .auth-switch {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.6);
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: underline;
-        }
-        
-        .auth-social {
-            display: flex;
-            gap: 1rem;
-            width: 100%;
-        }
-        
-        .auth-social button {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            transition: background 0.2s;
-        }
-        
-        .auth-social button:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        #auth-error {
-            color: #FF3366;
-            font-size: 0.85rem;
-            text-align: center;
-            min-height: 1.2em;
-        }
-    </style>
+    <title>Echo/Shift — Repair The Music</title>
+    <meta name="description" content="A rhythm-based math game where you repair broken music by solving equations. Each correct answer restores a missing instrument until the full song plays.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800;900&family=DM+Sans:wght@400;500;700&family=Bangers&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/styles.css">
     <!-- Phaser 3 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
+    <!-- Three.js for 3D character -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+    }
+    </script>
 </head>
 <body>
-    <div id="auth-container">
-        <h2 id="auth-title">Welcome back</h2>
-        
-        <form class="auth-form" id="auth-form">
-            <!-- Name input is visually hidden by default; will only show for Register -->
-            <input type="text" id="auth-name" class="auth-input" placeholder="Name" style="display: none;">
-            <input type="email" id="auth-email" class="auth-input" placeholder="Email" required>
-            <input type="password" id="auth-password" class="auth-input" placeholder="Password" required>
-            
-            <div id="auth-error"></div>
-            
-            <button type="submit" id="auth-submit" class="auth-btn">Log In</button>
-        </form>
 
-        <div style="display:flex; align-items:center; color:rgba(255,255,255,0.3); font-size: 0.8rem; margin: -5px 0;">
-            <hr style="flex:1; border-color:rgba(255,255,255,0.1);"><span style="padding: 0 10px;">OR</span><hr style="flex:1; border-color:rgba(255,255,255,0.1);">
-        </div>
-        
-        <div class="auth-social">
-            <button id="auth-github">GitHub</button>
-            <button id="auth-google">Google</button>
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- LANDING PAGE                                       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="landing-page" class="view active">
+        <!-- Floating decorative shapes -->
+        <div class="floating-shapes" aria-hidden="true">
+            <span class="shape shape-star shape-1">✦</span>
+            <span class="shape shape-sparkle shape-2">✨</span>
+            <span class="shape shape-circle shape-3">●</span>
+            <span class="shape shape-bolt shape-4">⚡</span>
+            <span class="shape shape-star shape-5">★</span>
+            <span class="shape shape-note shape-6">♫</span>
+            <span class="shape shape-sparkle shape-7">💫</span>
+            <span class="shape shape-circle shape-8">◆</span>
+            <span class="shape shape-bolt shape-9">🔥</span>
+            <span class="shape shape-note shape-10">🎵</span>
         </div>
 
-        <button class="auth-switch" id="auth-toggle">Don't have an account? Sign up</button>
+        <!-- Background massive text -->
+        <div class="bg-text" aria-hidden="true">ECHO</div>
+        <div class="bg-text bg-text-2" aria-hidden="true">SHIFT</div>
+
+        <!-- Hero Content -->
+        <div class="hero-container">
+            <div class="hero-badge">🎧 RHYTHM × MATH × MUSIC 🎧</div>
+            
+            <h1 class="hero-title">
+                <span class="title-line-1">ECHO</span>
+                <span class="title-slash">/</span>
+                <span class="title-line-2">SHIFT</span>
+            </h1>
+
+            <p class="hero-subtitle">REPAIR THE MUSIC. SOLVE THE MATH.</p>
+            <p class="hero-description">
+                Parts of the song are missing. Solve equations to restore each instrument — 
+                hear the track come alive as you level up through algebra.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="hero-buttons">
+                <button id="btn-lets-rock" class="btn btn-primary btn-xl" onclick="showView('auth-page')">
+                    <span class="btn-text">🎸 LET'S ROCK!</span>
+                </button>
+                <button id="btn-guest" class="btn btn-secondary" onclick="startGuestMode()">
+                    <span class="btn-text">▶ PLAY AS GUEST</span>
+                </button>
+            </div>
+
+            <button id="btn-instructions" class="btn btn-ghost" onclick="showInstructions()">
+                <span>❓ HOW TO PLAY</span>
+            </button>
+        </div>
+
+        <!-- Scrolling ticker -->
+        <div class="ticker" aria-hidden="true">
+            <div class="ticker-track">
+                <span>SOLVE EQUATIONS ★ REPAIR MUSIC ★ LEVEL UP ★ ALGEBRA MEETS AUDIO ★ FIX THE MIX ★ RESTORE THE BEAT ★ SOLVE EQUATIONS ★ REPAIR MUSIC ★ LEVEL UP ★ ALGEBRA MEETS AUDIO ★ FIX THE MIX ★ RESTORE THE BEAT ★ </span>
+            </div>
+        </div>
     </div>
 
-    <div id="logout-container" style="display: none; position: absolute; top: 1rem; right: 1rem; z-index: 20;">
-        <button id="auth-logout" class="auth-btn" style="padding: 8px 16px; font-size: 0.9rem;">Sign Out</button>
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- INSTRUCTIONS MODAL                                 -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="instructions-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <button class="modal-close" onclick="hideInstructions()">✕</button>
+            <h2 class="modal-title">🎵 HOW TO PLAY</h2>
+            
+            <div class="instruction-steps">
+                <div class="step step-1">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>LISTEN TO THE BROKEN TRACK</h3>
+                        <p>A song plays, but some instruments are missing — you'll hear gaps where the music should be.</p>
+                    </div>
+                </div>
+                <div class="step step-2">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>CLICK A MISSING TRACK</h3>
+                        <p>See the mixing board? The locked 🔒 tracks are broken. Click one to reveal a math equation.</p>
+                    </div>
+                </div>
+                <div class="step step-3">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>SOLVE THE EQUATION</h3>
+                        <p>Pick the correct answer from 4 choices. Right answer = that instrument comes back to life!</p>
+                    </div>
+                </div>
+                <div class="step step-4">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>RESTORE THE FULL SONG</h3>
+                        <p>Keep solving until every track is playing. 5 levels, harder math, bigger songs. You got this. 🎧</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="hideInstructions()">GOT IT! 🤘</button>
+            </div>
+        </div>
     </div>
 
-    <div id="game-container"></div>
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- AUTH PAGE                                          -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="auth-page" class="view">
+        <div class="floating-shapes" aria-hidden="true">
+            <span class="shape shape-note shape-1">🎵</span>
+            <span class="shape shape-sparkle shape-3">✨</span>
+            <span class="shape shape-bolt shape-5">⚡</span>
+            <span class="shape shape-star shape-7">★</span>
+        </div>
+        <div class="bg-text bg-text-auth" aria-hidden="true">LOGIN</div>
+
+        <div class="auth-container">
+            <button class="auth-back" onclick="showView('landing-page')">← BACK</button>
+            <h2 id="auth-title" class="auth-title">WELCOME BACK</h2>
+            
+            <form class="auth-form" id="auth-form">
+                <input type="text" id="auth-name" class="auth-input" placeholder="Your Name" style="display: none;">
+                <input type="email" id="auth-email" class="auth-input" placeholder="Email" required>
+                <input type="password" id="auth-password" class="auth-input" placeholder="Password" required>
+                
+                <div id="auth-error" class="auth-error"></div>
+                
+                <button type="submit" id="auth-submit" class="btn btn-primary btn-full">LOG IN</button>
+            </form>
+
+            <div class="auth-divider">
+                <hr><span>OR</span><hr>
+            </div>
+            
+            <div class="auth-social">
+                <button id="auth-github" class="btn btn-outline">GitHub</button>
+                <button id="auth-google" class="btn btn-outline">Google</button>
+            </div>
+
+            <button class="auth-switch" id="auth-toggle">Don't have an account? Sign up</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- GAME VIEW                                          -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div id="game-page" class="view">
+        <div id="logout-container" style="display: none; position: absolute; top: 1rem; right: 1rem; z-index: 20;">
+            <button id="auth-logout" class="btn btn-ghost btn-sm">Sign Out</button>
+        </div>
+        <div id="game-wrapper">
+            <div id="game-container"></div>
+            <div id="character-viewport"></div>
+        </div>
+    </div>
+
+    <script src="src/CharacterRenderer.js" type="module"></script>
     <script src="src/main.js" type="module"></script>
 </body>
 </html>
