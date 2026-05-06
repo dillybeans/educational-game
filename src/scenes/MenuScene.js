@@ -107,20 +107,20 @@ export class MenuScene extends Phaser.Scene {
 
         // ── Title with chromatic aberration ──
         // Furthest shadow
-        this.add.text(W/2 + 8, 150, 'ECHO/SHIFT', {
-            fontSize: '72px', fill: '#00F5D4', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
+        this.add.text(W/2 + 8, 150, 'GROOVING WITH MATH', {
+            fontSize: '52px', fill: '#00F5D4', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5).setAlpha(0.3);
         // Mid shadow
-        this.add.text(W/2 + 4, 148, 'ECHO/SHIFT', {
-            fontSize: '72px', fill: '#7B2FFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
+        this.add.text(W/2 + 4, 148, 'GROOVING WITH MATH', {
+            fontSize: '52px', fill: '#7B2FFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5).setAlpha(0.5);
         // Near shadow
-        this.add.text(W/2 + 2, 146, 'ECHO/SHIFT', {
-            fontSize: '72px', fill: '#FF3AF2', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
+        this.add.text(W/2 + 2, 146, 'GROOVING WITH MATH', {
+            fontSize: '52px', fill: '#FF3AF2', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5).setAlpha(0.7);
         // Main title
-        const title = this.add.text(W/2, 144, 'ECHO/SHIFT', {
-            fontSize: '72px', fill: '#FFFFFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
+        const title = this.add.text(W/2, 144, 'GROOVING WITH MATH', {
+            fontSize: '52px', fill: '#FFFFFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5);
         // Wiggle the title
         this.tweens.add({ targets: title, angle: 1, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });

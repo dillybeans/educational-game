@@ -92,8 +92,8 @@ class CharacterRenderer {
 
             this.playIdle();
         },
-        (xhr) => console.log(`Character ${(xhr.loaded / xhr.total * 100).toFixed(0)}% loaded`),
-        (error) => console.error('Error loading character:', error));
+            (xhr) => console.log(`Character ${(xhr.loaded / xhr.total * 100).toFixed(0)}% loaded`),
+            (error) => console.error('Error loading character:', error));
     }
 
     playIdle() {
