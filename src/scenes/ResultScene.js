@@ -6,6 +6,15 @@ export class ResultScene extends Phaser.Scene {
     init(data) {
         this.success = data.success || false;
         this.level = data.level || 1;
+        this.trackId = data.track || 'track1';
+
+        const trackNames = {
+            track1: 'WHISPERS OF SELF-EVOLUTION',
+            track2: 'DIGITAL DREAMSCAPE',
+            track3: 'NEON PULSE',
+            track4: 'CIRCUIT BREAKER'
+        };
+        this.trackDisplayName = trackNames[this.trackId] || trackNames.track1;
     }
 
     create() {
@@ -13,14 +22,22 @@ export class ResultScene extends Phaser.Scene {
         const COLORS = [0xFF3AF2, 0x00F5D4, 0xFFE600, 0xFF6B35, 0x7B2FFF];
         const CHEX = ['#FF3AF2', '#00F5D4', '#FFE600', '#FF6B35', '#7B2FFF'];
 
+        const trackAccentColors = {
+            track1: { color: 0xFF3AF2, hex: '#FF3AF2' },
+            track2: { color: 0x00F5D4, hex: '#00F5D4' },
+            track3: { color: 0xFFE600, hex: '#FFE600' },
+            track4: { color: 0x7B2FFF, hex: '#7B2FFF' }
+        };
+        const accent = trackAccentColors[this.trackId] || trackAccentColors.track1;
+
         // ── Background ──
         this.add.rectangle(W/2, H/2, W, H, 0x0D0D1A);
-        this.add.circle(200, 150, 200, 0xFF3AF2, 0.05);
+        this.add.circle(200, 150, 200, accent.color, 0.05);
         this.add.circle(600, 450, 250, 0x00F5D4, 0.04);
         this.add.circle(400, 300, 300, 0x7B2FFF, 0.03);
 
         // Dot grid
-        for (let x = 15; x < W; x += 28) for (let y = 15; y < H; y += 28) this.add.circle(x, y, 0.8, 0x00F5D4, 0.12);
+        for (let x = 15; x < W; x += 28) for (let y = 15; y < H; y += 28) this.add.circle(x, y, 0.8, accent.color, 0.12);
 
         // ── Floating shapes ──
         const shapes = [
@@ -36,10 +53,10 @@ export class ResultScene extends Phaser.Scene {
 
         // ── Giant bg text ──
         this.add.text(W/2, H/2, 'WOW', {
-            fontSize: '200px', fill: '#FF3AF2', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
+            fontSize: '200px', fill: accent.hex, fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5).setAlpha(0.03);
 
-        // ── Confetti burst (colored rectangles) ──
+        // ── Confetti burst ──
         for (let i = 0; i < 40; i++) {
             const cx = Phaser.Math.Between(50, 750);
             const cy = Phaser.Math.Between(50, 550);
@@ -55,76 +72,100 @@ export class ResultScene extends Phaser.Scene {
         }
 
         // ── Title ──
-        const accentCol = CHEX[(this.level - 1) % 5];
-        // Shadow layers
-        this.add.text(W/2 + 5, 165, '🎵 TRACK RESTORED 🎵', {
+        this.add.text(W/2 + 5, 135, '🎵 TRACK RESTORED 🎵', {
             fontSize: '36px', fill: '#7B2FFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5);
-        this.add.text(W/2 + 2, 163, '🎵 TRACK RESTORED 🎵', {
+        this.add.text(W/2 + 2, 133, '🎵 TRACK RESTORED 🎵', {
             fontSize: '36px', fill: '#FF3AF2', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5);
-        const titleTxt = this.add.text(W/2, 160, '🎵 TRACK RESTORED 🎵', {
+        const titleTxt = this.add.text(W/2, 130, '🎵 TRACK RESTORED 🎵', {
             fontSize: '36px', fill: '#FFFFFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5);
-        // Subtle wiggle
         this.tweens.add({ targets: titleTxt, angle: 1, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
+        // ── Track name badge ──
+        const trackBadgeBg = this.add.rectangle(W/2, 176, 360, 28, accent.color, 0.15)
+            .setStrokeStyle(2, accent.color);
+        this.add.text(W/2, 176, this.trackDisplayName, {
+            fontSize: '12px', fill: accent.hex, fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 3
+        }).setOrigin(0.5);
+
         // Level badge
-        const badgeBg = this.add.rectangle(W/2, 210, 180, 30, COLORS[(this.level - 1) % 5], 0.2)
+        const badgeBg = this.add.rectangle(W/2, 210, 180, 26, COLORS[(this.level - 1) % 5], 0.2)
             .setStrokeStyle(2, COLORS[(this.level - 1) % 5]);
         this.add.text(W/2, 210, `LEVEL ${this.level} COMPLETE`, {
-            fontSize: '13px', fill: accentCol, fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 3
+            fontSize: '12px', fill: CHEX[(this.level - 1) % 5], fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 3
         }).setOrigin(0.5);
 
         // Divider
-        const div = this.add.rectangle(W/2, 240, 300, 3, 0xFF3AF2, 0.4);
+        const div = this.add.rectangle(W/2, 236, 300, 3, accent.color, 0.4);
         this.tweens.add({ targets: div, scaleX: 0.5, duration: 2000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
         // Sub message
-        this.add.text(W/2, 268, 'All missing stems repaired successfully.', {
+        this.add.text(W/2, 260, 'All missing stems repaired successfully.', {
             fontSize: '15px', fill: 'rgba(255,255,255,0.6)', fontFamily: 'DM Sans, monospace'
         }).setOrigin(0.5);
 
         // Stats
         const stemCounts = { 1: 1, 2: 2, 3: 3, 4: 5, 5: 6 };
         const count = stemCounts[this.level] || 1;
-        this.add.text(W/2, 300, `STEMS: ${count}  ·  EQUATIONS: ${count}`, {
+        this.add.text(W/2, 288, `STEMS: ${count}  ·  EQUATIONS: ${count}`, {
             fontSize: '12px', fill: '#555577', fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 3
         }).setOrigin(0.5);
 
-        // ── Next Track / Back Button ──
-        const isLast = this.level >= 5;
-        const btnLabel = isLast ? '🏠 BACK TO STUDIO' : '▶ NEXT TRACK';
+        // ── Next Level / Next Track / Back Button ──
+        const isLastLevel = this.level >= 5;
 
-        // Stacked shadows
-        this.add.rectangle(W/2 + 8, 378, 300, 58, 0x00F5D4);
-        this.add.rectangle(W/2 + 4, 374, 300, 58, 0xFF3AF2);
-        const nextBg = this.add.rectangle(W/2, 370, 300, 58, 0x7B2FFF).setStrokeStyle(4, 0xFFE600);
-        const nextTxt = this.add.text(W/2, 370, btnLabel, {
-            fontSize: '20px', fill: '#FFFFFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 2
+        // Next level button
+        if (!isLastLevel) {
+            const nextS3 = this.add.rectangle(W/2 + 8, 342, 300, 52, 0x00F5D4);
+            const nextS2 = this.add.rectangle(W/2 + 4, 338, 300, 52, 0xFF3AF2);
+            const nextBg = this.add.rectangle(W/2, 334, 300, 52, 0x7B2FFF).setStrokeStyle(4, 0xFFE600);
+            const nextTxt = this.add.text(W/2, 334, '▶ NEXT LEVEL', {
+                fontSize: '20px', fill: '#FFFFFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 2
+            }).setOrigin(0.5);
+
+            this.tweens.add({ targets: nextBg, alpha: { from: 1, to: 0.85 }, duration: 1200, yoyo: true, repeat: -1 });
+
+            nextBg.setInteractive({ useHandCursor: true });
+            nextBg.on('pointerover', () => {
+                this.sound.play('hover_click');
+                nextBg.setFillStyle(0xFFE600); nextBg.setStrokeStyle(4, 0xFF3AF2); nextTxt.setColor('#0D0D1A');
+            });
+            nextBg.on('pointerout', () => {
+                nextBg.setFillStyle(0x7B2FFF); nextBg.setStrokeStyle(4, 0xFFE600); nextTxt.setColor('#FFFFFF');
+            });
+            nextBg.on('pointerdown', () => {
+                this.sound.play('hover_click');
+                this.scene.start('GameScene', { level: this.level + 1, track: this.trackId });
+            });
+        }
+
+        // Back to studio button
+        const backY = isLastLevel ? 342 : 400;
+        const backS3 = this.add.rectangle(W/2 + 6, backY + 6, 260, 44, accent.color, 0.5);
+        const backS2 = this.add.rectangle(W/2 + 3, backY + 3, 260, 44, 0xFF3AF2, 0.5);
+        const backBg = this.add.rectangle(W/2, backY, 260, 44, 0x2D1B4E).setStrokeStyle(3, accent.color);
+        const backTxt = this.add.text(W/2, backY, '🏠 BACK TO STUDIO', {
+            fontSize: '16px', fill: accent.hex, fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        // Pulse
-        this.tweens.add({ targets: nextBg, alpha: { from: 1, to: 0.85 }, duration: 1200, yoyo: true, repeat: -1 });
-
-        nextBg.setInteractive({ useHandCursor: true });
-        nextBg.on('pointerover', () => {
+        backBg.setInteractive({ useHandCursor: true });
+        backBg.on('pointerover', () => {
             this.sound.play('hover_click');
-            nextBg.setFillStyle(0xFFE600); nextBg.setStrokeStyle(4, 0xFF3AF2);
-            nextTxt.setColor('#0D0D1A');
+            backBg.setFillStyle(accent.color); backTxt.setColor('#0D0D1A');
         });
-        nextBg.on('pointerout', () => {
-            nextBg.setFillStyle(0x7B2FFF); nextBg.setStrokeStyle(4, 0xFFE600);
-            nextTxt.setColor('#FFFFFF');
+        backBg.on('pointerout', () => {
+            backBg.setFillStyle(0x2D1B4E); backTxt.setColor(accent.hex);
         });
-        nextBg.on('pointerdown', () => {
+        backBg.on('pointerdown', () => {
             this.sound.play('hover_click');
-            if (isLast) this.scene.start('MenuScene');
-            else this.scene.start('GameScene', { level: this.level + 1 });
+            this.scene.start('MenuScene');
         });
 
         // ── Replay Button ──
-        const replayTxt = this.add.text(W/2, 430, '↻ REPLAY TRACK', {
+        const replayY = isLastLevel ? 390 : 440;
+        const replayTxt = this.add.text(W/2, replayY, '↻ REPLAY LEVEL', {
             fontSize: '14px', fill: '#FF6B35', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5).setInteractive({ useHandCursor: true });
 
@@ -132,13 +173,13 @@ export class ResultScene extends Phaser.Scene {
         replayTxt.on('pointerout', () => replayTxt.setColor('#FF6B35'));
         replayTxt.on('pointerdown', () => {
             this.sound.play('hover_click');
-            this.scene.start('GameScene', { level: this.level });
+            this.scene.start('GameScene', { level: this.level, track: this.trackId });
         });
 
         // ── Bottom ticker ──
-        this.add.rectangle(W/2, H - 16, W, 32, 0x00F5D4);
+        this.add.rectangle(W/2, H - 16, W, 32, accent.color);
         this.add.rectangle(W/2, H - 32, W, 3, 0xFFE600);
-        const ticker = this.add.text(W, H - 16, 'NICE WORK ★ TRACK RESTORED ★ KEEP GOING ★ MATH IS MUSIC ★ YOU DID IT ★ NICE WORK ★ TRACK RESTORED ★ KEEP GOING ★ MATH IS MUSIC ★ ', {
+        const ticker = this.add.text(W, H - 16, `NICE WORK ★ ${this.trackDisplayName} ★ TRACK RESTORED ★ KEEP GOING ★ MATH IS MUSIC ★ YOU DID IT ★ `, {
             fontSize: '11px', fill: '#0D0D1A', fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 4
         }).setOrigin(0, 0.5);
         this.tweens.add({ targets: ticker, x: -ticker.width, duration: 18000, repeat: -1, ease: 'Linear' });

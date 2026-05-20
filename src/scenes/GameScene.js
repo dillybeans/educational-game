@@ -5,43 +5,63 @@ export class GameScene extends Phaser.Scene {
 
     init(data) {
         this.level = data.level || 1;
-        const allStems = [
-            { key: 'stem_drums', label: 'DRUMS' },
-            { key: 'stem_keys', label: 'KEYS' },
-            { key: 'stem_synth1', label: 'SYNTH 1' },
-            { key: 'stem_synth2', label: 'SYNTH 2' },
-            { key: 'stem_synth4', label: 'SYNTH 4' },
-            { key: 'stem_synth', label: 'SYNTH PAD' },
-            { key: 'stem_fx', label: 'FX' }
-        ];
-        const levelConfigs = {
-            1: { trackName: 'TRACK 01 — FOUNDATIONS', playing: [0], missing: [1],
-                equations: [{ display: '7 + ? = 12', answer: 5, choices: [3, 5, 7, 9] }] },
-            2: { trackName: 'TRACK 02 — LAYERING', playing: [0, 1], missing: [2, 3],
-                equations: [
-                    { display: '? × 4 = 24', answer: 6, choices: [4, 6, 8, 12] },
-                    { display: '36 ÷ ? = 9', answer: 4, choices: [3, 4, 6, 9] }] },
-            3: { trackName: 'TRACK 03 — TEXTURE', playing: [0, 1], missing: [2, 3, 4],
-                equations: [
-                    { display: '2x + 3 = 11    x = ?', answer: 4, choices: [3, 4, 5, 7] },
-                    { display: '5x - 4 = 16    x = ?', answer: 4, choices: [2, 3, 4, 6] },
-                    { display: '3x + 1 = 19    x = ?', answer: 6, choices: [4, 5, 6, 8] }] },
-            4: { trackName: 'TRACK 04 — DEPTH', playing: [0], missing: [1, 2, 3, 4, 5],
-                equations: [
-                    { display: '15 - ? = 7', answer: 8, choices: [6, 7, 8, 9] },
-                    { display: '? × 3 = 27', answer: 9, choices: [6, 8, 9, 12] },
-                    { display: '3(x+2) = 18   x = ?', answer: 4, choices: [3, 4, 5, 6] },
-                    { display: 'x÷4 + 5 = 8   x = ?', answer: 12, choices: [8, 10, 12, 16] },
-                    { display: '2x - 7 = 9     x = ?', answer: 8, choices: [6, 7, 8, 10] }] },
-            5: { trackName: 'TRACK 05 — FULL MIX', playing: [0], missing: [1, 2, 3, 4, 5, 6],
-                equations: [
-                    { display: '2x+3 = x+10   x = ?', answer: 7, choices: [5, 6, 7, 9] },
-                    { display: '4(x-1) = 2x+6 x = ?', answer: 5, choices: [3, 4, 5, 7] },
-                    { display: '3x+8 = 5x-2   x = ?', answer: 5, choices: [3, 4, 5, 6] },
-                    { display: '(x+3)×2 = 18  x = ?', answer: 6, choices: [4, 5, 6, 8] },
-                    { display: '7x-4 = 3x+12  x = ?', answer: 4, choices: [3, 4, 5, 6] },
-                    { display: '5(x+1)=3x+13  x = ?', answer: 4, choices: [2, 3, 4, 6] }] }
+        this.trackId = data.track || 'track1';
+
+        // ── Track Stem Definitions ──
+        const trackStemDefs = {
+            track1: [
+                { key: 'stem_drums', label: 'DRUMS' },
+                { key: 'stem_keys', label: 'KEYS' },
+                { key: 'stem_synth1', label: 'SYNTH 1' },
+                { key: 'stem_synth2', label: 'SYNTH 2' },
+                { key: 'stem_synth4', label: 'SYNTH 4' },
+                { key: 'stem_synth', label: 'SYNTH PAD' },
+                { key: 'stem_fx', label: 'FX' }
+            ],
+            track2: [
+                { key: 'track2_drums', label: 'DRUMS', engineStem: 'drums' },
+                { key: 'track2_bass', label: 'BASS', engineStem: 'bass' },
+                { key: 'track2_keys', label: 'KEYS', engineStem: 'keys' },
+                { key: 'track2_lead', label: 'LEAD', engineStem: 'lead' },
+                { key: 'track2_pad', label: 'PAD', engineStem: 'pad' },
+                { key: 'track2_fx', label: 'FX', engineStem: 'fx' },
+                { key: 'track2_arp', label: 'ARP', engineStem: 'arp' }
+            ],
+            track3: [
+                { key: 'track3_drums', label: 'DRUMS', engineStem: 'drums' },
+                { key: 'track3_bass', label: 'BASS', engineStem: 'bass' },
+                { key: 'track3_keys', label: 'KEYS', engineStem: 'keys' },
+                { key: 'track3_lead', label: 'LEAD', engineStem: 'lead' },
+                { key: 'track3_pad', label: 'PAD', engineStem: 'pad' },
+                { key: 'track3_fx', label: 'FX', engineStem: 'fx' },
+                { key: 'track3_arp', label: 'ARP', engineStem: 'arp' }
+            ],
+            track4: [
+                { key: 'track4_drums', label: 'DRUMS', engineStem: 'drums' },
+                { key: 'track4_bass', label: 'BASS', engineStem: 'bass' },
+                { key: 'track4_keys', label: 'KEYS', engineStem: 'keys' },
+                { key: 'track4_lead', label: 'LEAD', engineStem: 'lead' },
+                { key: 'track4_pad', label: 'PAD', engineStem: 'pad' },
+                { key: 'track4_fx', label: 'FX', engineStem: 'fx' },
+                { key: 'track4_arp', label: 'ARP', engineStem: 'arp' }
+            ]
         };
+
+        const allStems = trackStemDefs[this.trackId] || trackStemDefs.track1;
+        this.isProcedural = this.trackId !== 'track1';
+
+        // ── Track Names ──
+        const trackNames = {
+            track1: 'WHISPERS OF SELF-EVOLUTION',
+            track2: 'DIGITAL DREAMSCAPE',
+            track3: 'NEON PULSE',
+            track4: 'CIRCUIT BREAKER'
+        };
+        this.trackName = trackNames[this.trackId] || trackNames.track1;
+
+        // ── Level Configs per Track ──
+        const levelConfigs = this._getLevelConfigs();
+
         this.config = levelConfigs[this.level] || levelConfigs[1];
         this.allStems = allStems;
         this.tracks = [];
@@ -56,36 +76,166 @@ export class GameScene extends Phaser.Scene {
         this.activeEquationTrack = null;
     }
 
+    _getLevelConfigs() {
+        // All tracks share the same level progression structure
+        // but equations vary per track to keep things fresh
+        const equationSets = {
+            track1: {
+                1: { trackName: `TRACK 01 — FOUNDATIONS`, playing: [0], missing: [1],
+                    equations: [{ display: '7 + ? = 12', answer: 5, choices: [3, 5, 7, 9] }] },
+                2: { trackName: `TRACK 02 — LAYERING`, playing: [0, 1], missing: [2, 3],
+                    equations: [
+                        { display: '? × 4 = 24', answer: 6, choices: [4, 6, 8, 12] },
+                        { display: '36 ÷ ? = 9', answer: 4, choices: [3, 4, 6, 9] }] },
+                3: { trackName: `TRACK 03 — TEXTURE`, playing: [0, 1], missing: [2, 3, 4],
+                    equations: [
+                        { display: '2x + 3 = 11    x = ?', answer: 4, choices: [3, 4, 5, 7] },
+                        { display: '5x - 4 = 16    x = ?', answer: 4, choices: [2, 3, 4, 6] },
+                        { display: '3x + 1 = 19    x = ?', answer: 6, choices: [4, 5, 6, 8] }] },
+                4: { trackName: `TRACK 04 — DEPTH`, playing: [0], missing: [1, 2, 3, 4, 5],
+                    equations: [
+                        { display: '15 - ? = 7', answer: 8, choices: [6, 7, 8, 9] },
+                        { display: '? × 3 = 27', answer: 9, choices: [6, 8, 9, 12] },
+                        { display: '3(x+2) = 18   x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: 'x÷4 + 5 = 8   x = ?', answer: 12, choices: [8, 10, 12, 16] },
+                        { display: '2x - 7 = 9     x = ?', answer: 8, choices: [6, 7, 8, 10] }] },
+                5: { trackName: `TRACK 05 — FULL MIX`, playing: [0], missing: [1, 2, 3, 4, 5, 6],
+                    equations: [
+                        { display: '2x+3 = x+10   x = ?', answer: 7, choices: [5, 6, 7, 9] },
+                        { display: '4(x-1) = 2x+6 x = ?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: '3x+8 = 5x-2   x = ?', answer: 5, choices: [3, 4, 5, 6] },
+                        { display: '(x+3)×2 = 18  x = ?', answer: 6, choices: [4, 5, 6, 8] },
+                        { display: '7x-4 = 3x+12  x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: '5(x+1)=3x+13  x = ?', answer: 4, choices: [2, 3, 4, 6] }] }
+            },
+            track2: {
+                1: { trackName: `TRACK 01 — SIGNAL`, playing: [0], missing: [1],
+                    equations: [{ display: '? + 9 = 15', answer: 6, choices: [4, 6, 8, 10] }] },
+                2: { trackName: `TRACK 02 — WAVE`, playing: [0, 1], missing: [2, 3],
+                    equations: [
+                        { display: '? × 5 = 35', answer: 7, choices: [5, 6, 7, 9] },
+                        { display: '48 ÷ ? = 6', answer: 8, choices: [6, 7, 8, 12] }] },
+                3: { trackName: `TRACK 03 — FREQUENCY`, playing: [0, 1], missing: [2, 3, 4],
+                    equations: [
+                        { display: '3x + 5 = 20    x = ?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: '4x - 3 = 13    x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: '2x + 8 = 22    x = ?', answer: 7, choices: [5, 6, 7, 9] }] },
+                4: { trackName: `TRACK 04 — RESONANCE`, playing: [0], missing: [1, 2, 3, 4, 5],
+                    equations: [
+                        { display: '20 - ? = 11', answer: 9, choices: [7, 8, 9, 11] },
+                        { display: '? × 6 = 42', answer: 7, choices: [5, 6, 7, 8] },
+                        { display: '2(x+5) = 18   x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: 'x÷3 + 4 = 7   x = ?', answer: 9, choices: [6, 8, 9, 12] },
+                        { display: '3x - 5 = 16    x = ?', answer: 7, choices: [5, 6, 7, 9] }] },
+                5: { trackName: `TRACK 05 — DREAMSCAPE`, playing: [0], missing: [1, 2, 3, 4, 5, 6],
+                    equations: [
+                        { display: '3x+2 = x+14   x = ?', answer: 6, choices: [4, 5, 6, 8] },
+                        { display: '5(x-2) = 3x+4 x = ?', answer: 7, choices: [5, 6, 7, 9] },
+                        { display: '2x+10 = 4x-2  x = ?', answer: 6, choices: [4, 5, 6, 8] },
+                        { display: '(x+4)×3 = 27  x = ?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: '6x-3 = 4x+9   x = ?', answer: 6, choices: [4, 5, 6, 8] },
+                        { display: '4(x+2)=2x+16  x = ?', answer: 4, choices: [2, 3, 4, 6] }] }
+            },
+            track3: {
+                1: { trackName: `TRACK 01 — GLOW`, playing: [0], missing: [1],
+                    equations: [{ display: '11 + ? = 19', answer: 8, choices: [6, 7, 8, 10] }] },
+                2: { trackName: `TRACK 02 — FLICKER`, playing: [0, 1], missing: [2, 3],
+                    equations: [
+                        { display: '? × 7 = 56', answer: 8, choices: [6, 7, 8, 9] },
+                        { display: '63 ÷ ? = 7', answer: 9, choices: [7, 8, 9, 12] }] },
+                3: { trackName: `TRACK 03 — BEAM`, playing: [0, 1], missing: [2, 3, 4],
+                    equations: [
+                        { display: '4x + 1 = 17    x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: '6x - 5 = 19    x = ?', answer: 4, choices: [3, 4, 5, 7] },
+                        { display: '3x + 7 = 25    x = ?', answer: 6, choices: [4, 5, 6, 8] }] },
+                4: { trackName: `TRACK 04 — SPECTRUM`, playing: [0], missing: [1, 2, 3, 4, 5],
+                    equations: [
+                        { display: '25 - ? = 16', answer: 9, choices: [7, 8, 9, 11] },
+                        { display: '? × 8 = 72', answer: 9, choices: [7, 8, 9, 12] },
+                        { display: '4(x+1) = 24   x = ?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: 'x÷5 + 3 = 6   x = ?', answer: 15, choices: [10, 12, 15, 20] },
+                        { display: '5x - 8 = 17    x = ?', answer: 5, choices: [3, 4, 5, 7] }] },
+                5: { trackName: `TRACK 05 — NEON MIX`, playing: [0], missing: [1, 2, 3, 4, 5, 6],
+                    equations: [
+                        { display: '4x+1 = 2x+11  x = ?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: '3(x+3) = 2x+14 x=?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: '5x+3 = 8x-9   x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: '(x+5)×2 = 22  x = ?', answer: 6, choices: [4, 5, 6, 8] },
+                        { display: '8x-5 = 5x+10  x = ?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: '3(x+4)=2x+17  x = ?', answer: 5, choices: [3, 4, 5, 7] }] }
+            },
+            track4: {
+                1: { trackName: `TRACK 01 — BOOT`, playing: [0], missing: [1],
+                    equations: [{ display: '? + 6 = 14', answer: 8, choices: [5, 7, 8, 10] }] },
+                2: { trackName: `TRACK 02 — COMPILE`, playing: [0, 1], missing: [2, 3],
+                    equations: [
+                        { display: '? × 9 = 81', answer: 9, choices: [7, 8, 9, 11] },
+                        { display: '72 ÷ ? = 8', answer: 9, choices: [6, 8, 9, 12] }] },
+                3: { trackName: `TRACK 03 — PROCESS`, playing: [0, 1], missing: [2, 3, 4],
+                    equations: [
+                        { display: '5x + 2 = 27    x = ?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: '7x - 6 = 22    x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: '2x + 11 = 23   x = ?', answer: 6, choices: [4, 5, 6, 8] }] },
+                4: { trackName: `TRACK 04 — EXECUTE`, playing: [0], missing: [1, 2, 3, 4, 5],
+                    equations: [
+                        { display: '30 - ? = 18', answer: 12, choices: [10, 11, 12, 14] },
+                        { display: '? × 4 = 48', answer: 12, choices: [8, 10, 12, 16] },
+                        { display: '5(x+3) = 35   x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: 'x÷2 + 7 = 13  x = ?', answer: 12, choices: [8, 10, 12, 16] },
+                        { display: '4x - 9 = 15    x = ?', answer: 6, choices: [4, 5, 6, 8] }] },
+                5: { trackName: `TRACK 05 — OVERCLOCK`, playing: [0], missing: [1, 2, 3, 4, 5, 6],
+                    equations: [
+                        { display: '5x+4 = 3x+16  x = ?', answer: 6, choices: [4, 5, 6, 8] },
+                        { display: '2(x+7) = 3x+8 x = ?', answer: 6, choices: [4, 5, 6, 8] },
+                        { display: '6x+2 = 9x-10  x = ?', answer: 4, choices: [3, 4, 5, 6] },
+                        { display: '(x+2)×4 = 32  x = ?', answer: 6, choices: [4, 5, 6, 8] },
+                        { display: '9x-7 = 6x+8   x = ?', answer: 5, choices: [3, 4, 5, 7] },
+                        { display: '4(x+1)=2x+14  x = ?', answer: 5, choices: [3, 4, 5, 7] }] }
+            }
+        };
+
+        return equationSets[this.trackId] || equationSets.track1;
+    }
+
     create() {
         const W = 800, H = 600;
         const COLORS = [0xFF3AF2, 0x00F5D4, 0xFFE600, 0xFF6B35, 0x7B2FFF];
         const CHEX = ['#FF3AF2', '#00F5D4', '#FFE600', '#FF6B35', '#7B2FFF'];
         const LANE_H = 46, LANE_GAP = 6, LANE_LEFT = 30, LANE_W = 640;
 
+        // Track accent colors
+        const trackColors = {
+            track1: { primary: 0xFF3AF2, hex: '#FF3AF2' },
+            track2: { primary: 0x00F5D4, hex: '#00F5D4' },
+            track3: { primary: 0xFFE600, hex: '#FFE600' },
+            track4: { primary: 0x7B2FFF, hex: '#7B2FFF' }
+        };
+        const accent = trackColors[this.trackId] || trackColors.track1;
+
         // ── Background ──
         this.add.rectangle(W/2, H/2, W, H, 0x0D0D1A);
-        this.add.circle(100, 100, 180, 0xFF3AF2, 0.04);
+        this.add.circle(100, 100, 180, accent.primary, 0.04);
         this.add.circle(700, 500, 220, 0x00F5D4, 0.03);
         this.add.circle(400, 300, 260, 0x7B2FFF, 0.03);
 
         // Dot grid
-        for (let x = 15; x < W; x += 25) for (let y = 15; y < H; y += 25) this.add.circle(x, y, 0.8, 0xFF3AF2, 0.1);
+        for (let x = 15; x < W; x += 25) for (let y = 15; y < H; y += 25) this.add.circle(x, y, 0.8, accent.primary, 0.1);
 
         // ── Header ──
-        // Shadow
-        this.add.text(W/2 + 3, 28, this.config.trackName, {
-            fontSize: '20px', fill: '#7B2FFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
+        const headerText = `${this.trackName} — ${this.config.trackName}`;
+        this.add.text(W/2 + 3, 28, headerText, {
+            fontSize: '16px', fill: '#7B2FFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5);
-        this.add.text(W/2, 26, this.config.trackName, {
-            fontSize: '20px', fill: '#FFFFFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
+        this.add.text(W/2, 26, headerText, {
+            fontSize: '16px', fill: '#FFFFFF', fontFamily: 'Outfit, monospace', fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        const levelBadge = this.add.text(W/2, 52, `LEVEL ${this.level}/5`, {
-            fontSize: '11px', fill: '#FF3AF2', fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 6
+        const levelBadge = this.add.text(W/2, 50, `LEVEL ${this.level}/5`, {
+            fontSize: '11px', fill: accent.hex, fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 6
         }).setOrigin(0.5);
 
         // Divider line
-        this.add.rectangle(W/2, 66, 500, 2, 0xFF3AF2, 0.3);
+        this.add.rectangle(W/2, 64, 500, 2, accent.primary, 0.3);
 
         // ── Menu Button ──
         const menuTxt = this.add.text(50, 26, '✕ MENU', {
@@ -93,7 +243,13 @@ export class GameScene extends Phaser.Scene {
         }).setOrigin(0, 0.5).setInteractive({ useHandCursor: true });
         menuTxt.on('pointerover', () => { menuTxt.setColor('#FF3AF2'); this.sound.play('hover_click'); });
         menuTxt.on('pointerout', () => menuTxt.setColor('#555577'));
-        menuTxt.on('pointerdown', () => { this.sound.play('hover_click'); this.sound.stopAll(); window.dispatchEvent(new CustomEvent('character:hide')); this.scene.start('MenuScene'); });
+        menuTxt.on('pointerdown', () => {
+            this.sound.play('hover_click');
+            this.sound.stopAll();
+            this._stopProceduralAudio();
+            window.dispatchEvent(new CustomEvent('character:hide'));
+            this.scene.start('MenuScene');
+        });
 
         // ── Sound Toggle Button ──
         this.isMuted = false;
@@ -122,12 +278,15 @@ export class GameScene extends Phaser.Scene {
             } else {
                 soundBtnBg.setFillStyle(0x1A1530, 0.8);
             }
+            if (window.audioEngine) {
+                window.audioEngine.setMasterMute(this.isMuted);
+            }
         });
 
         // ── Track Lanes ──
         this.trackLanes = [];
         this.waveformBars = [];
-        const startY = 82;
+        const startY = 80;
 
         this.tracks.forEach((track, i) => {
             const y = startY + i * (LANE_H + LANE_GAP);
@@ -186,7 +345,6 @@ export class GameScene extends Phaser.Scene {
 
         // ── Progress Bar ──
         const progY = startY + this.tracks.length * (LANE_H + LANE_GAP) + 8;
-        // Shadow
         this.add.rectangle(W/2 + 3, progY + 2, LANE_W, 16, 0x7B2FFF, 0.15);
         this.add.rectangle(W/2, progY, LANE_W, 16, 0x111122).setStrokeStyle(2, 0x333355);
         this.progressBarFill = this.add.rectangle(
@@ -202,12 +360,9 @@ export class GameScene extends Phaser.Scene {
         const panelY = H - 90;
         this.eqPanel = this.add.container(W/2, panelY);
 
-        // Panel shadow
         this.eqPanel.add(this.add.rectangle(5, 5, 720, 145, 0x7B2FFF, 0.15));
-        // Panel bg
-        const panelBg = this.add.rectangle(0, 0, 720, 145, 0x0D0D1A, 0.95).setStrokeStyle(3, 0x00F5D4);
+        const panelBg = this.add.rectangle(0, 0, 720, 145, 0x0D0D1A, 0.95).setStrokeStyle(3, accent.primary);
         this.eqPanel.add(panelBg);
-        // Corner accent
         this.eqPanel.add(this.add.rectangle(-356, -69, 8, 8, 0xFF3AF2));
         this.eqPanel.add(this.add.rectangle(356, -69, 8, 8, 0xFFE600));
         this.eqPanel.add(this.add.rectangle(-356, 69, 8, 8, 0xFFE600));
@@ -224,20 +379,18 @@ export class GameScene extends Phaser.Scene {
         this.eqPanel.add(this.eqDisplay);
 
         this.eqTarget = this.add.text(0, -58, '', {
-            fontSize: '12px', fill: '#FF3AF2', fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 3
+            fontSize: '12px', fill: accent.hex, fontFamily: 'Outfit, monospace', fontStyle: 'bold', letterSpacing: 3
         }).setOrigin(0.5);
         this.eqPanel.add(this.eqTarget);
 
         this.answerButtons = [];
 
         // ── Start audio ──
-        this.stemAudios = {};
-        this.tracks.forEach(track => {
-            const audio = this.sound.add(track.key, { volume: track.isPlaying ? 0.7 : 0, loop: true });
-            audio.play();
-            this.stemAudios[track.key] = audio;
-            if (!track.isPlaying) audio.setVolume(0);
-        });
+        if (this.isProcedural) {
+            this._startProceduralAudio();
+        } else {
+            this._startFileAudio();
+        }
 
         // Instruction hint
         this.hintText = this.add.text(W/2, progY + 22, 'Click a 🔒 track to begin repairing', {
@@ -251,6 +404,37 @@ export class GameScene extends Phaser.Scene {
         }
         window.dispatchEvent(new CustomEvent('character:show'));
         window.dispatchEvent(new CustomEvent('character:idle'));
+    }
+
+    _startFileAudio() {
+        this.stemAudios = {};
+        this.tracks.forEach(track => {
+            const audio = this.sound.add(track.key, { volume: track.isPlaying ? 0.7 : 0, loop: true });
+            audio.play();
+            this.stemAudios[track.key] = audio;
+            if (!track.isPlaying) audio.setVolume(0);
+        });
+    }
+
+    _startProceduralAudio() {
+        if (!window.audioEngine) return;
+        const engine = window.audioEngine;
+        engine.resume();
+
+        this.tracks.forEach(track => {
+            if (track.isPlaying) {
+                engine.playStem(this.trackId, track.engineStem, 0.7);
+            } else {
+                // Start but muted, so they stay in sync
+                engine.playStem(this.trackId, track.engineStem, 0);
+            }
+        });
+    }
+
+    _stopProceduralAudio() {
+        if (window.audioEngine) {
+            window.audioEngine.stopTrack(this.trackId);
+        }
     }
 
     showEquation(track) {
@@ -274,9 +458,7 @@ export class GameScene extends Phaser.Scene {
             const by = 25;
             const col = COLORS[i % 4];
 
-            // Shadow
             const sh = this.add.rectangle(bx + 3, by + 3, btnW, 44, col, 0.2);
-            // Button
             const bg = this.add.rectangle(bx, by, btnW, 44, 0x1A1530).setStrokeStyle(3, col)
                 .setInteractive({ useHandCursor: true });
             const txt = this.add.text(bx, by, `${choice}`, {
@@ -308,8 +490,14 @@ export class GameScene extends Phaser.Scene {
             window.dispatchEvent(new CustomEvent('character:punch'));
 
             // Fade in audio
-            const audio = this.stemAudios[track.key];
-            this.tweens.add({ targets: audio, volume: 0.7, duration: 1500, ease: 'Sine.easeIn' });
+            if (this.isProcedural) {
+                if (window.audioEngine) {
+                    window.audioEngine.fadeStemVolume(this.trackId, track.engineStem, 0.7, 1500);
+                }
+            } else {
+                const audio = this.stemAudios[track.key];
+                this.tweens.add({ targets: audio, volume: 0.7, duration: 1500, ease: 'Sine.easeIn' });
+            }
 
             // Update lane visuals
             const laneData = this.trackLanes.find(l => l.track === track);
@@ -355,8 +543,9 @@ export class GameScene extends Phaser.Scene {
                 this.cameras.main.flash(800, 255, 58, 242, 0.4);
                 this.time.delayedCall(3500, () => {
                     this.sound.stopAll();
+                    this._stopProceduralAudio();
                     window.dispatchEvent(new CustomEvent('character:hide'));
-                    this.scene.start('ResultScene', { success: true, level: this.level });
+                    this.scene.start('ResultScene', { success: true, level: this.level, track: this.trackId });
                 });
             } else {
                 this.eqPrompt.setText(`✓ ${track.label} RESTORED — Select another track`);

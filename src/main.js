@@ -2,16 +2,25 @@ import { MenuScene } from './scenes/MenuScene.js';
 import { GameScene } from './scenes/GameScene.js';
 import { ResultScene } from './scenes/ResultScene.js';
 import { authClient } from './authClient.bundle.js';
+import audioEngine from './AudioEngine.js';
+
+// Expose AudioEngine globally for Phaser scenes to access
+window.audioEngine = audioEngine;
 
 // ── Phaser Config ──
 const config = {
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS,
     parent: 'game-container',
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 800,
         height: 600
+    },
+    render: {
+        antialias: true,
+        roundPixels: true,
+        pixelArt: false,
     },
     physics: {
         default: 'arcade',
