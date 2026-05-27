@@ -27,7 +27,7 @@ export class MenuScene extends Phaser.Scene {
         this.load.audio('stem_synth4', 'src/stems/Whispers of Self-Evolution (synth four).wav');
         this.load.audio('stem_synth', 'src/stems/Whispers of Self-Evolution (synth).wav');
         this.load.audio('stem_fx', 'src/stems/Whispers of Self-Evolution (fx).wav');
-        this.load.audio('full_mix', 'src/stems/Full Mix - "Whispers of Self-Evolution".wav');
+        this.load.audio('full_mix', 'src/stems/Full Mix - Whispers of Self-Evolution.wav');
     }
 
     create() {
